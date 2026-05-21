@@ -6,17 +6,17 @@
     --pfs-primary: #4f46e5;
     --pfs-primary-hover: #4338ca;
     --pfs-primary-glow: rgba(79, 70, 229, 0.15);
-    
+
     --pfs-success: #10b981;
     --pfs-success-bg: #ecfdf5;
     --pfs-success-border: #a7f3d0;
     --pfs-success-text: #065f46;
-    
+
     --pfs-error: #ef4444;
     --pfs-error-bg: #fef2f2;
     --pfs-error-border: #fca5a5;
     --pfs-error-text: #991b1b;
-    
+
     --pfs-dark-bg: #0f172a;
     --pfs-glass-bg: rgba(255, 255, 255, 0.7);
     --pfs-glass-border: rgba(226, 232, 240, 0.8);
@@ -24,7 +24,7 @@
     --pfs-text-muted: #64748b;
     --pfs-input-bg: #ffffff;
     --pfs-input-border: #cbd5e1;
-    
+
     --pfs-radius-sm: 8px;
     --pfs-radius-md: 12px;
     --pfs-radius-lg: 16px;
@@ -91,6 +91,7 @@
         grid-template-columns: 1fr 1fr;
         gap: 1.25rem;
     }
+
     .pfs-grid-span-2 {
         grid-column: span 2;
     }
@@ -203,7 +204,9 @@
 }
 
 @keyframes pfs-spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* Alerts and Messages Styling */
@@ -263,6 +266,7 @@
         opacity: 0;
         transform: translateY(-8px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);

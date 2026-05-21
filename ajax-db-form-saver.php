@@ -4,7 +4,7 @@ Plugin Name: AJAX Form Saver
 Plugin URI: https://example.com/premium-ajax-form-saver
 Description: A highly elegant and secure AJAX contact form that saves entries directly into a custom database table. Includes a robust admin panel to manage, delete, and export submissions as CSV. Use the shortcode [premium_ajax_form] to display the form.
 Version: 1.0.0
-Author: Antigravity
+Author: Navdeep Singh
 Author URI: https://example.com
 License: GPL2
 Text Domain: premium-ajax-form-saver

@@ -1,5 +1,5 @@
 === Premium AJAX Form Saver ===
-Contributors: antigravity
+Contributors: Navdeep Singh
 Tags: ajax, contact form, database saver, contact form database, premium form
 Requires at least: 5.0
 Tested up to: 6.4

@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     alertInner.className = 'pfs-alert-inner pfs-alert';
                     alertContainer.appendChild(alertInner);
                 }
-                
+
                 let alertIcon = alertInner.querySelector('.pfs-alert-icon');
                 if (!alertIcon) {
                     alertIcon = document.createElement('div');
@@ -59,10 +59,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
 
                 const el = getAlertElements();
-                
+
                 // Clear existing state and apply success/error class (preserving pfs-alert-inner)
                 el.inner.className = 'pfs-alert-inner pfs-alert ' + (isSuccess ? 'pfs-alert-success' : 'pfs-alert-error');
-                
+
                 // SVG Icons
                 const successIconSvg = `
                     <svg class="pfs-alert-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const nameField = form.querySelector('input[name="name"]');
             const emailField = form.querySelector('input[name="email"]');
             const subjectField = form.querySelector('input[name="subject"]');
-            
+
             if (nameField && nameField.value.trim() === '') {
                 showFeedback(false, 'Please enter your full name.');
                 if (nameField.focus) nameField.focus();
@@ -130,7 +130,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (emailField.focus) emailField.focus();
                     return;
                 }
-                
+
                 // Comprehensive email pattern matching
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 if (!emailRegex.test(emailVal)) {
@@ -165,28 +165,28 @@ document.addEventListener('DOMContentLoaded', function () {
                 method: 'POST',
                 body: formData
             })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                setLoadingState(false);
-                if (data.success) {
-                    // Success! Display premium message & clear form
-                    showFeedback(true, data.data.message || 'Form submitted successfully! Thank you.');
-                    form.reset();
-                } else {
-                    // Business logic failure (e.g. security check failed, invalid email)
-                    showFeedback(false, data.data.message || 'An error occurred during submission.');
-                }
-            })
-            .catch(error => {
-                console.error('Submission Error:', error);
-                setLoadingState(false);
-                showFeedback(false, 'Failed to connect to the server. Please check your internet connection and try again.');
-            });
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    setLoadingState(false);
+                    if (data.success) {
+                        // Success! Display premium message & clear form
+                        showFeedback(true, data.data.message || 'Form submitted successfully! Thank you.');
+                        form.reset();
+                    } else {
+                        // Business logic failure (e.g. security check failed, invalid email)
+                        showFeedback(false, data.data.message || 'An error occurred during submission.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Submission Error:', error);
+                    setLoadingState(false);
+                    showFeedback(false, 'Failed to connect to the server. Please check your internet connection and try again.');
+                });
         });
     });
 
@@ -195,7 +195,7 @@ document.addEventListener('DOMContentLoaded', function () {
     deleteButtons.forEach(button => {
         button.addEventListener('click', function (e) {
             e.preventDefault();
-            
+
             const submissionId = this.dataset.id;
             const nonce = this.dataset.nonce;
             const row = document.getElementById('pfs-submission-' + submissionId);
@@ -208,7 +208,7 @@ document.addEventListener('DOMContentLoaded', function () {
             row.classList.add('pfs-row-deleting');
 
             const ajaxUrl = typeof pfs_admin_vars !== 'undefined' ? pfs_admin_vars.ajax_url : '/wp-admin/admin-ajax.php';
-            
+
             const formData = new FormData();
             formData.append('action', 'pfs_delete_submission');
             formData.append('id', submissionId);
@@ -218,28 +218,28 @@ document.addEventListener('DOMContentLoaded', function () {
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Remove row from table after animation finishes
-                    setTimeout(() => {
-                        row.remove();
-                        // If no more entries are left, show the empty state message
-                        const tableBody = document.querySelector('.pfs-admin-table tbody');
-                        if (tableBody && tableBody.children.length === 0) {
-                            location.reload(); // Quick refresh to show standard WP empty state if needed
-                        }
-                    }, 500);
-                } else {
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Remove row from table after animation finishes
+                        setTimeout(() => {
+                            row.remove();
+                            // If no more entries are left, show the empty state message
+                            const tableBody = document.querySelector('.pfs-admin-table tbody');
+                            if (tableBody && tableBody.children.length === 0) {
+                                location.reload(); // Quick refresh to show standard WP empty state if needed
+                            }
+                        }, 500);
+                    } else {
+                        row.classList.remove('pfs-row-deleting');
+                        alert(data.data.message || 'Failed to delete entry.');
+                    }
+                })
+                .catch(error => {
                     row.classList.remove('pfs-row-deleting');
-                    alert(data.data.message || 'Failed to delete entry.');
-                }
-            })
-            .catch(error => {
-                row.classList.remove('pfs-row-deleting');
-                console.error('Delete Error:', error);
-                alert('Connection failure. Could not contact the server.');
-            });
+                    console.error('Delete Error:', error);
+                    alert('Connection failure. Could not contact the server.');
+                });
         });
     });
 });
