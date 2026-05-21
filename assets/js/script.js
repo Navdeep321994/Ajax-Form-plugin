@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 let alertInner = alertContainer.querySelector('.pfs-alert-inner');
                 if (!alertInner) {
                     alertInner = document.createElement('div');
-                    alertInner.className = 'pfs-alert';
+                    alertInner.className = 'pfs-alert-inner pfs-alert';
                     alertContainer.appendChild(alertInner);
                 }
                 
@@ -60,8 +60,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 const el = getAlertElements();
                 
-                // Clear existing state and apply success/error class
-                el.inner.className = 'pfs-alert ' + (isSuccess ? 'pfs-alert-success' : 'pfs-alert-error');
+                // Clear existing state and apply success/error class (preserving pfs-alert-inner)
+                el.inner.className = 'pfs-alert-inner pfs-alert ' + (isSuccess ? 'pfs-alert-success' : 'pfs-alert-error');
                 
                 // SVG Icons
                 const successIconSvg = `
