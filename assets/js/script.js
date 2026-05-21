@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const forms = document.querySelectorAll('.pfs-ajax-form');
 
     forms.forEach(form => {
+        let feedbackTimeout = null;
+
         form.addEventListener('submit', function (e) {
             e.preventDefault();
 
@@ -51,6 +53,11 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             function showFeedback(isSuccess, messageText) {
+                // Clear any existing active timeout to prevent overlapping hides
+                if (feedbackTimeout) {
+                    clearTimeout(feedbackTimeout);
+                }
+
                 const el = getAlertElements();
                 
                 // Clear existing state and apply success/error class
@@ -73,6 +80,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 // Animate showing
                 el.container.classList.add('show');
+
+                // Automatically hide the message after 3 seconds (3000ms)
+                feedbackTimeout = setTimeout(function () {
+                    hideFeedback();
+                }, 3000);
             }
 
             function hideFeedback() {
