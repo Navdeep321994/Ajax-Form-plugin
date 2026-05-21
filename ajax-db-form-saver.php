@@ -154,7 +154,7 @@ function pfs_render_shortcode($atts)
                     <label class="pfs-label" for="pfs-message">Message</label>
                     <div class="pfs-input-wrapper">
                         <textarea id="pfs-message" name="message" class="pfs-textarea"
-                            placeholder="Type your message details here..." required></textarea>
+                            placeholder="Type your message details here..."></textarea>
                     </div>
                 </div>
 
@@ -197,8 +197,8 @@ function pfs_handle_form_submission()
     $message = isset($_POST['message']) ? trim($_POST['message']) : '';
 
     // C. Validation
-    if (empty($name) || empty($email) || empty($subject) || empty($message)) {
-        wp_send_json_error(array('message' => 'All form fields are strictly required.'));
+    if (empty($name) || empty($email) || empty($subject)) {
+        wp_send_json_error(array('message' => 'Name, Email, and Subject fields are strictly required.'));
     }
 
     if (!is_email($email)) {
