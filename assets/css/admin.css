@@ -1,0 +1,71 @@
+/* ==========================================================================
+   AJAX DB Form Saver — Admin Styles
+   ========================================================================== */
+
+/* Export CSV button — sits in the list-table filter bar */
+.adfs-export-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 2;
+    color: #ffffff !important;
+    background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none !important;
+    box-shadow: 0 2px 5px rgba(79, 70, 229, 0.35);
+    transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+    vertical-align: middle;
+    margin-left: 6px;
+}
+
+.adfs-export-btn:hover,
+.adfs-export-btn:focus {
+    background: linear-gradient(135deg, #4338ca 0%, #4f46e5 100%);
+    box-shadow: 0 4px 10px rgba(79, 70, 229, 0.45);
+    transform: translateY(-1px);
+    color: #ffffff !important;
+    outline: none;
+}
+
+.adfs-export-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(79, 70, 229, 0.3);
+}
+
+.adfs-export-btn svg {
+    flex-shrink: 0;
+    vertical-align: middle;
+}
+
+/* Meta box table tweaks */
+.pfs-meta-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.pfs-meta-table th {
+    width: 140px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #475569;
+    vertical-align: top;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.pfs-meta-table td {
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #334155;
+    border-bottom: 1px solid #f1f5f9;
+    word-break: break-word;
+}
+
+.pfs-meta-table tr:last-child th,
+.pfs-meta-table tr:last-child td {
+    border-bottom: none;
+}

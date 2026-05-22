@@ -23,6 +23,11 @@ class Ajax_DB_Form_Saver {
         add_filter( 'manage_ajax_form_entry_posts_columns', [ $this, 'admin_columns' ] );
         add_action( 'manage_ajax_form_entry_posts_custom_column', [ $this, 'admin_column_content' ], 10, 2 );
         add_filter( 'manage_edit-ajax_form_entry_sortable_columns', [ $this, 'sortable_columns' ] );
+
+        // CSV export
+        add_action( 'admin_action_adfs_export_csv', [ $this, 'export_csv' ] );
+        add_action( 'restrict_manage_posts', [ $this, 'render_csv_export_button' ] );
+        add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin_assets' ] );
     }
 
     /* -----------------------------------------------------------------------
@@ -386,6 +391,122 @@ class Ajax_DB_Form_Saver {
     public function sortable_columns( $columns ) {
         $columns['adfs_email'] = 'adfs_email';
         return $columns;
+    }
+
+    /* -----------------------------------------------------------------------
+     * Enqueue admin-only assets (CSS for the export button)
+     * --------------------------------------------------------------------- */
+    public function enqueue_admin_assets( $hook ) {
+        // Only load on the Form Entries list screen
+        $screen = get_current_screen();
+        if ( ! $screen || $screen->post_type !== 'ajax_form_entry' ) {
+            return;
+        }
+        wp_enqueue_style(
+            'ajax-db-form-saver-admin-css',
+            plugins_url( 'assets/css/admin.css', __FILE__ ),
+            [],
+            '2.1'
+        );
+    }
+
+    /* -----------------------------------------------------------------------
+     * Render the "Export CSV" button above the entries list table
+     * --------------------------------------------------------------------- */
+    public function render_csv_export_button( $post_type ) {
+        if ( $post_type !== 'ajax_form_entry' ) {
+            return;
+        }
+
+        $url = wp_nonce_url(
+            add_query_arg(
+                [ 'action' => 'adfs_export_csv' ],
+                admin_url( 'admin.php' )
+            ),
+            'adfs_export_csv_nonce'
+        );
+        ?>
+        <a href="<?php echo esc_url( $url ); ?>" class="adfs-export-btn" title="Download all form entries as a CSV file">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="2.2"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Export CSV
+        </a>
+        <?php
+    }
+
+    /* -----------------------------------------------------------------------
+     * Handle CSV download
+     * --------------------------------------------------------------------- */
+    public function export_csv() {
+        // Capability & nonce check
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_die( __( 'You do not have permission to export entries.', 'ajax-db-form-saver' ) );
+        }
+
+        check_admin_referer( 'adfs_export_csv_nonce' );
+
+        // Fetch ALL private entries (no pagination limit)
+        $entries = get_posts( [
+            'post_type'      => 'ajax_form_entry',
+            'post_status'    => 'private',
+            'posts_per_page' => -1,
+            'orderby'        => 'date',
+            'order'          => 'DESC',
+        ] );
+
+        // Build filename with current date
+        $filename = 'form-entries-' . gmdate( 'Y-m-d' ) . '.csv';
+
+        // Send headers to trigger browser download
+        header( 'Content-Type: text/csv; charset=UTF-8' );
+        header( 'Content-Disposition: attachment; filename="' . $filename . '"' );
+        header( 'Pragma: no-cache' );
+        header( 'Expires: 0' );
+
+        // Open output stream
+        $output = fopen( 'php://output', 'w' );
+
+        // UTF-8 BOM so Excel opens it correctly
+        fputs( $output, "\xEF\xBB\xBF" );
+
+        // Header row
+        fputcsv( $output, [
+            'ID',
+            'Full Name',
+            'Email',
+            'Phone',
+            'Subject',
+            'Message',
+            'Subject Category',
+            'Submitted Date',
+        ] );
+
+        // Data rows
+        foreach ( $entries as $entry ) {
+            $terms    = get_the_terms( $entry->ID, 'form_entry_subject' );
+            $category = ( $terms && ! is_wp_error( $terms ) )
+                ? implode( ', ', wp_list_pluck( $terms, 'name' ) )
+                : '';
+
+            fputcsv( $output, [
+                $entry->ID,
+                get_post_meta( $entry->ID, '_adfs_name',    true ),
+                get_post_meta( $entry->ID, '_adfs_email',   true ),
+                get_post_meta( $entry->ID, '_adfs_phone',   true ),
+                get_post_meta( $entry->ID, '_adfs_subject', true ),
+                get_post_meta( $entry->ID, '_adfs_message', true ),
+                $category,
+                get_the_date( 'Y-m-d H:i:s', $entry ),
+            ] );
+        }
+
+        fclose( $output );
+        exit;
     }
 }
 
