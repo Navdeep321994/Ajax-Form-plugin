@@ -9,15 +9,18 @@ jQuery( document ).ready( function ( $ ) {
     var submitBtn   = $( '#pfs-submit-btn' );
     var msgs        = AjaxDBFormSaver.messages;
 
-    // Timers so we can cancel them if a new message arrives
+    // Timer for the bottom alert box
     var hideTimer = null;
+
+    // Per-field auto-hide timers (keyed by fieldId)
+    var fieldTimers = {};
 
     /* ------------------------------------------------------------------
      * Helpers
      * ------------------------------------------------------------------ */
 
     /**
-     * Show an inline field error.
+     * Show an inline field error and auto-hide it after 3 seconds.
      */
     function showFieldError( fieldId, message ) {
         var $group = $( '#pfs-group-' + fieldId );
@@ -27,10 +30,21 @@ jQuery( document ).ready( function ( $ ) {
         $group.addClass( 'pfs-has-error' );
         $input.addClass( 'pfs-input-error' );
         $err.text( message ).addClass( 'visible' );
+
+        // Cancel any existing timer for this field
+        if ( fieldTimers[ fieldId ] ) {
+            clearTimeout( fieldTimers[ fieldId ] );
+        }
+
+        // Auto-hide after 3 seconds
+        fieldTimers[ fieldId ] = setTimeout( function () {
+            clearFieldError( fieldId );
+            delete fieldTimers[ fieldId ];
+        }, 3000 );
     }
 
     /**
-     * Clear a single field error.
+     * Clear a single field error (also cancels its auto-hide timer).
      */
     function clearFieldError( fieldId ) {
         var $group = $( '#pfs-group-' + fieldId );
@@ -40,6 +54,12 @@ jQuery( document ).ready( function ( $ ) {
         $group.removeClass( 'pfs-has-error' );
         $input.removeClass( 'pfs-input-error' );
         $err.text( '' ).removeClass( 'visible' );
+
+        // Cancel the auto-hide timer if the user fixed it manually
+        if ( fieldTimers[ fieldId ] ) {
+            clearTimeout( fieldTimers[ fieldId ] );
+            delete fieldTimers[ fieldId ];
+        }
     }
 
     /**
