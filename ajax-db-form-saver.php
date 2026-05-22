@@ -236,7 +236,7 @@ class Ajax_DB_Form_Saver {
         // Insert post
         $post_id = wp_insert_post( [
             'post_type'   => 'ajax_form_entry',
-            'post_title'  => sanitize_text_field( $name . ' — ' . $subject ),
+            'post_title'  => sanitize_text_field( $name  ),
             'post_status' => 'private',
             'meta_input'  => [
                 '_adfs_name'    => $name,
@@ -291,6 +291,11 @@ class Ajax_DB_Form_Saver {
             'has_archive'         => false,
             'exclude_from_search' => true,
             'rewrite'             => false,
+            // Remove "Add Post" from the submenu
+            'capabilities'        => [
+                'create_posts' => 'do_not_allow',
+            ],
+            'map_meta_cap'        => true,
         ] );
     }
 
@@ -317,7 +322,7 @@ class Ajax_DB_Form_Saver {
             'public'            => false,
             'show_ui'           => true,
             'show_admin_column' => true,
-            'show_in_menu'      => true,
+            'show_in_menu'      => false,
             'rewrite'           => false,
             'query_var'         => false,
         ] );
